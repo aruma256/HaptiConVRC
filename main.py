@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import time
 
 from version_checker import VersionChecker
 
@@ -46,7 +47,8 @@ def main():
             joycon_l = RumbleJoyCon(*get_L_id())
             print('Joy-Con L を接続しました。')
         except ValueError:
-            print('エラー : Joy-Con L に接続できません')
+            print('エラー : Joy-Con L に接続できません。3秒後に終了します...')
+            time.sleep(3)
             exit(1)
     else:
         joycon_l = None
@@ -55,7 +57,8 @@ def main():
             joycon_r = RumbleJoyCon(*get_R_id())
             print('Joy-Con R を接続しました。')
         except ValueError:
-            print('エラー : Joy-Con R に接続できません')
+            print('エラー : Joy-Con R に接続できません。3秒後に終了します...')
+            time.sleep(3)
             exit(1)
     else:
         joycon_r = None
