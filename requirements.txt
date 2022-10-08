@@ -1,0 +1,5 @@
+requests
+python-osc
+joycon-python
+hidapi # for joycon-python
+pyglm # for joycon-python

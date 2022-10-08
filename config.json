@@ -1,0 +1,18 @@
+{
+    "contact_parameters": {
+        "L": {
+            "address": "/avatar/parameters/Contact_Left_Ear",
+            "mode": "On Enter"
+        },
+        "R": {
+            "address": "/avatar/parameters/Contact_Right_Ear",
+            "mode": "On Enter"
+        }
+    },
+    "OSC": {
+        "listen": {
+            "ip": "127.0.0.1",
+            "port": 9001
+        }
+    }
+}
