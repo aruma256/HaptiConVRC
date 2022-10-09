@@ -6,6 +6,8 @@ from pyjoycon import get_L_id, get_R_id
 from pythonosc.dispatcher import Dispatcher
 from pythonosc.osc_server import BlockingOSCUDPServer
 
+from hapticonvrc.rumble_engine.onenter_engine import OnEnterEngine
+
 from .rumble_joycon import RumbleJoyCon
 from .version_checker import VersionChecker
 
@@ -18,6 +20,8 @@ class Core:
     def __init__(self) -> None:
         self._joycon_l = None
         self._joycon_r = None
+        self._engine_l = None
+        self._engine_r = None
 
     def _print_name(self) -> None:
         print(f'HaptiConVRC-v{VERSION}')
@@ -31,35 +35,29 @@ class Core:
         with CONFIG_FILE.open(encoding='utf-8') as f:
             self._config = json.load(f)
 
-    def _setup_joycon_l(self) -> None:
+    def _create_joycon(self, side: str) -> RumbleJoyCon:
         try:
-            self._joycon_l = RumbleJoyCon(*get_L_id())
-            print('Joy-Con L を接続しました。')
+            joycon = RumbleJoyCon(*(get_L_id() if side=='L' else get_R_id()))
+            print(f'Joy-Con {side} を接続しました。')
+            return joycon
         except ValueError:
-            print('エラー : Joy-Con L に接続できません。3秒後に終了します...')
+            print(f'エラー : Joy-Con {side} に接続できません。3秒後に終了します...')
             time.sleep(3)
             exit(1)
 
-    def _setup_joycon_r(self) -> None:
-        try:
-            self._joycon_r = RumbleJoyCon(*get_R_id())
-            print('Joy-Con R を接続しました。')
-        except ValueError:
-            print('エラー : Joy-Con R に接続できません。3秒後に終了します...')
-            time.sleep(3)
-            exit(1)
-
-    def _setup_joycons(self) -> None:
-        if self._config['contact_parameters']['L']:
-            self._setup_joycon_l()
-        if self._config['contact_parameters']['R']:
-            self._setup_joycon_r()
+    def _create_engines(self) -> None:
+        if self._config['contact_parameters']['L']['address']:
+            joycon = self._create_joycon('L')
+            self._engine_l = OnEnterEngine(joycon)
+        if self._config['contact_parameters']['R']['address']:
+            joycon = self._create_joycon('R')
+            self._engine_r = OnEnterEngine(joycon)
 
     def start(self) -> None:
         self._print_name()
         self._version_check()
         self._load_config()
-        self._setup_joycons()
+        self._create_engines()
         #
         dispatcher = Dispatcher()
         dispatcher.set_default_handler(self._on_osc)
@@ -68,8 +66,8 @@ class Core:
 
     def _on_osc(self, address, value):
         if address == self._config['contact_parameters']['L']['address']:
-            if self._joycon_l and value:
-                self._joycon_l.send_rumble()
+            if self._engine_l:
+                self._engine_l.update(value)
         if address == self._config['contact_parameters']['R']['address']:
-            if self._joycon_r and value:
-                self._joycon_r.send_rumble()
+            if self._engine_r:
+                self._engine_r.update(value)
