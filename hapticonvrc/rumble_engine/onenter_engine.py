@@ -9,8 +9,13 @@ if TYPE_CHECKING:
 class OnEnterEngine(BaseEngine):
 
     def __init__(self, joycon: 'RumbleJoyCon') -> None:
+        self._current_value = False
         super().__init__(joycon)
 
+    def _get_current_amp(self):
+        res = int(self._current_value)
+        self._current_value = False
+        return res
+
     def update(self, value: bool) -> None:
-        if value:
-            self._joycon.send_rumble()
+        self._current_value = True

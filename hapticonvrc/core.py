@@ -6,6 +6,7 @@ from pyjoycon import get_L_id, get_R_id
 from pythonosc.dispatcher import Dispatcher
 from pythonosc.osc_server import BlockingOSCUDPServer
 
+from hapticonvrc.rumble_engine.proximity_engine import ProximityEngine
 from hapticonvrc.rumble_engine.onenter_engine import OnEnterEngine
 
 from .rumble_joycon import RumbleJoyCon
@@ -45,13 +46,26 @@ class Core:
             time.sleep(3)
             exit(1)
 
+    def _create_engine(self, name, joycon):
+        if name == 'On Enter':
+            return OnEnterEngine(joycon)
+        elif name == 'Proximity':
+            return ProximityEngine(joycon)
+        else:
+            print(f'mode "{name}" は使用できません。"On Enter"または"Proximity"を指定してください。')
+            print('3秒後に終了します...')
+            time.sleep(3)
+            exit(1)
+
     def _create_engines(self) -> None:
         if self._config['contact_parameters']['L']['address']:
             joycon = self._create_joycon('L')
-            self._engine_l = OnEnterEngine(joycon)
+            joycon.set_amp_max(self._config['contact_parameters']['L']['amp_max'])
+            self._engine_l = self._create_engine(self._config['contact_parameters']['L']['mode'], joycon)
         if self._config['contact_parameters']['R']['address']:
             joycon = self._create_joycon('R')
-            self._engine_r = OnEnterEngine(joycon)
+            joycon.set_amp_max(self._config['contact_parameters']['R']['amp_max'])
+            self._engine_r = self._create_engine(self._config['contact_parameters']['R']['mode'], joycon)
 
     def start(self) -> None:
         self._print_name()
