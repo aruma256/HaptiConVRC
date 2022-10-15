@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 class BaseEngine:
 
     def __init__(self, joycon: 'RumbleJoyCon') -> None:
+        self._amp_max = 12
         self._joycon = joycon
         self._thread = Thread(target=self._loop, daemon=True)
         self._thread.start()
@@ -16,9 +17,22 @@ class BaseEngine:
     def _loop(self):
         while True:
             amp = self._get_current_amp()
-            if amp:
-                self._joycon.send_rumble(amp)
+            amp_level = self._to_amp_level(amp)
+            if amp_level:
+                self._joycon.send_rumble(amp_level)
             sleep(0.01)
+
+    def set_amp_max(self, amp: int) -> None:
+        if not (0 <= amp <= 12):
+            print('amp_maxは0以上12以下の整数にしてください')
+        amp = min(amp, 12)
+        amp = max(amp, 0)
+        self._amp_max = amp
+
+    def _to_amp_level(self, amp: float) -> int:
+        assert 0 <= amp <= 1
+        MAX = self._amp_max - 1
+        return int(amp * MAX)
 
     def _get_current_amp(self) -> float:
         raise RuntimeError()

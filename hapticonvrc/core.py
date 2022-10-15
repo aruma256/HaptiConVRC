@@ -60,12 +60,12 @@ class Core:
     def _create_engines(self) -> None:
         if self._config['contact_parameters']['L']['address']:
             joycon = self._create_joycon('L')
-            joycon.set_amp_max(self._config['contact_parameters']['L']['amp_max'])
             self._engine_l = self._create_engine(self._config['contact_parameters']['L']['mode'], joycon)
+            self._engine_l.set_amp_max(self._config['contact_parameters']['L']['amp_max'])
         if self._config['contact_parameters']['R']['address']:
             joycon = self._create_joycon('R')
-            joycon.set_amp_max(self._config['contact_parameters']['R']['amp_max'])
             self._engine_r = self._create_engine(self._config['contact_parameters']['R']['mode'], joycon)
+            self._engine_r.set_amp_max(self._config['contact_parameters']['R']['amp_max'])
 
     def start(self) -> None:
         self._print_name()
