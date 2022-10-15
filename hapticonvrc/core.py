@@ -76,7 +76,11 @@ class Core:
         dispatcher = Dispatcher()
         dispatcher.set_default_handler(self._on_osc)
         server = BlockingOSCUDPServer((self._config['OSC']['listen']['ip'], self._config['OSC']['listen']['port']), dispatcher)
-        server.serve_forever()
+        try:
+            print('終了方法 : Ctrl+C')
+            server.serve_forever()
+        except KeyboardInterrupt:
+            pass
 
     def _on_osc(self, address, value):
         if address == self._config['contact_parameters']['L']['address']:
