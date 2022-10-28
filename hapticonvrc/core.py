@@ -13,7 +13,7 @@ from .rumble_joycon import RumbleJoyCon
 from .version_checker import VersionChecker
 
 CONFIG_FILE = Path("config.json")
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 
 class Core:
