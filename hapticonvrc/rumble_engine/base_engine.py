@@ -18,12 +18,16 @@ class BaseEngine:
         self._thread.start()
 
     def _loop(self):
-        while True:
-            amp = self._get_current_amp()
-            amp_level = self._to_amp_level(amp)
-            if amp_level:
-                self._joycon.send_rumble(amp_level)
-            sleep(0.01)
+        try:
+            while True:
+                amp = self._get_current_amp()
+                amp_level = self._to_amp_level(amp)
+                if amp_level:
+                    self._joycon.send_rumble(amp_level)
+                sleep(0.01)
+        except OSError:
+            print('JoyConとの接続が切れました。JoyConがスリープ状態になった可能性があります。')
+            print('JoyConのボタンを押し再接続してから、HaptiConVRCを再実行してください。')
 
     def set_amp_max(self, amp: int) -> None:
         if not (0 <= amp <= 12):
