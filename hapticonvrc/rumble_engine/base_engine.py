@@ -11,7 +11,10 @@ class BaseEngine:
     def __init__(self, joycon: 'RumbleJoyCon') -> None:
         self._amp_max = 12
         self._joycon = joycon
+        self._show_level = False
         self._thread = Thread(target=self._loop, daemon=True)
+
+    def start(self) -> None:
         self._thread.start()
 
     def _loop(self):

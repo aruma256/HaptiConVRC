@@ -62,22 +62,25 @@ class Core:
             joycon = self._create_joycon('L')
             self._engine_l = self._create_engine(self._config['contact_parameters']['L']['mode'], joycon)
             self._engine_l.set_amp_max(self._config['contact_parameters']['L']['amp_max'])
+            self._engine_l.start()
         if self._config['contact_parameters']['R']['address']:
             joycon = self._create_joycon('R')
             self._engine_r = self._create_engine(self._config['contact_parameters']['R']['mode'], joycon)
             self._engine_r.set_amp_max(self._config['contact_parameters']['R']['amp_max'])
+            self._engine_r._show_level = True
+            self._engine_r.start()
 
     def start(self) -> None:
         self._print_name()
         self._version_check()
         self._load_config()
         self._create_engines()
+        print('終了方法 : Ctrl+C')
         #
         dispatcher = Dispatcher()
         dispatcher.set_default_handler(self._on_osc)
         server = BlockingOSCUDPServer((self._config['OSC']['listen']['ip'], self._config['OSC']['listen']['port']), dispatcher)
         try:
-            print('終了方法 : Ctrl+C')
             server.serve_forever()
         except KeyboardInterrupt:
             pass
