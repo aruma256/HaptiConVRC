@@ -33,7 +33,7 @@ VRChatでアバターの接触イベントを検知して、Joy-Conを振動さ�
 
 ## ソフトのセットアップと実行
 
-1. PCにPythonをインストールする。
+1. PCに **Python3.9 または Python3.10 **をインストールする。（他のバージョンでは動作未確認、Python3.11ではライブラリインストール失敗の報告あり）
     * インストール時、 `Add Python3.x to PATH` にチェックを入れることを推奨
 1. HaptiConVRCのzipをダウンロードし、展開する。
     * [最新版リンク](https://github.com/aruma256/HaptiConVRC/archive/refs/heads/main.zip)
