@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 SOURCE = Path("licenses.txt")
-TARGET = Path("virtualtail") / Path("view") / Path("osslicense_view.py")
+TARGET = Path("hapticonvrc") / Path("app.py")
 
 
 with open(SOURCE, "r", encoding="utf-8") as f:
