@@ -2,7 +2,8 @@ import flet as ft
 
 from .core import Core
 
-
+VERSION = "0.3.0"
+APP_TITLE = f"HaptiConVRC v{VERSION}"
 LICENSE_TEXT = r"""
 {PLACEHOLDER}
 """
@@ -10,25 +11,25 @@ LICENSE_TEXT = r"""
 
 class App:
     def main(self, page: ft.Page):
-        page.title = "サンプル"
+        page.title = APP_TITLE
         self._core = Core()
         self._core.start_osc_server()
 
         self._app_bar = ft.AppBar(
-            title=ft.Text("Test app"),
+            title=ft.Text(APP_TITLE),
             bgcolor=ft.colors.SURFACE_VARIANT,
         )
         self._position_text = ft.Text()
         self._connect_l_button = ft.ElevatedButton(
-            "Connect Controller L",
+            "コントローラー L を接続する",
             on_click=self._connect_l_button_clicked,
         )
         self._connect_r_button = ft.ElevatedButton(
-            "Connect Controller R",
+            "コントローラー R を接続する",
             on_click=self._connect_r_button_clicked,
         )
         self._oss_button = ft.ElevatedButton(
-            "OSS License",
+            "OSSライセンス",
             on_click=self._show_oss_license,
         )
         page.controls.extend(
