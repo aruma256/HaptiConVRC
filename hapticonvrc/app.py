@@ -12,6 +12,7 @@ class App:
     def main(self, page: ft.Page):
         page.title = "サンプル"
         self._core = Core()
+        self._core.start_osc_server()
 
         self._app_bar = ft.AppBar(
             title=ft.Text("Test app"),
@@ -26,10 +27,6 @@ class App:
             "Connect Controller R",
             on_click=self._connect_r_button_clicked,
         )
-        self._start_osc_server_button = ft.ElevatedButton(
-            "Start OSC-Server",
-            on_click=self._start_osc_server_button_clicked,
-        )
         self._oss_button = ft.ElevatedButton(
             "OSS License",
             on_click=self._show_oss_license,
@@ -39,7 +36,6 @@ class App:
                 self._app_bar,
                 self._connect_l_button,
                 self._connect_r_button,
-                self._start_osc_server_button,
                 self._position_text,
                 self._oss_button,
             ],
@@ -67,10 +63,6 @@ class App:
             event.page.dialog = dialog
             dialog.open = True
             event.page.update()
-
-    def _start_osc_server_button_clicked(self, _):
-        self._start_osc_server_button.disabled = True
-        self._core.start_osc_server()
 
     def _show_oss_license(self, event):
         dialog = ft.AlertDialog(
