@@ -12,17 +12,21 @@ class OSCValueProvider:
         self.left = None
         self.right = None
 
-    def _osc_handler(self, address: str, value: float) -> None:
-        if address.endswith("L"):
-            self.left = value
-        elif address.endswith("R"):
-            self.right = value
+    def _osc_handler_left(self, address: str, value: float) -> None:
+        self.left = value
+
+    def _osc_handler_right(self, address: str, value: float) -> None:
+        self.right = value
 
     def start(self) -> None:
         dispatcher = Dispatcher()
         dispatcher.map(
-            "/avatar/parameters/Contact/Tail/*",
-            self._osc_handler,
+            "/avatar/parameters/HaptiConVRC/L",
+            self._osc_handler_left,
+        )
+        dispatcher.map(
+            "/avatar/parameters/HaptiConVRC/R",
+            self._osc_handler_right,
         )
         server = BlockingOSCUDPServer((self._ip, self._port), dispatcher)
         self._thread = Thread(target=server.serve_forever, daemon=True)

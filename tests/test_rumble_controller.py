@@ -1,43 +1,84 @@
 # Written with ChatGPT
 
 
-from unittest.mock import Mock
-from hapticonvrc.jcon import Jcon
+from unittest.mock import Mock, patch
+
 from hapticonvrc.rumble_controller import RumbleController
 
 
-class TestRumbleController:
-    def test_update_with_positive_pos(self):
-        controller = RumbleController()
-        controller._jcon_L = jcon_L = Mock(spec=Jcon)
-        controller._jcon_R = jcon_R = Mock(spec=Jcon)
+def test_connect_l():
+    controller = RumbleController()
+    jcon = Mock()
+    controller._get_jcon = lambda side: jcon
 
-        controller.update(10 / 10 / 3.3)
-        jcon_L.send_rumble.assert_called_with(10)
-        jcon_R.send_rumble.assert_called_with(0)
+    controller.connect("L")
+    assert controller._jcon_L == jcon
+    assert jcon.connect.called_once()
 
-        controller.update(12 / 10 / 3.3)
-        jcon_L.send_rumble.assert_called_with(11)
-        jcon_R.send_rumble.assert_called_with(0)
 
-    def test_update_with_negative_pos(self):
-        controller = RumbleController()
-        controller._jcon_L = jcon_L = Mock(spec=Jcon)
-        controller._jcon_R = jcon_R = Mock(spec=Jcon)
+def test_connect_r():
+    controller = RumbleController()
+    jcon = Mock()
+    controller._get_jcon = lambda side: jcon
 
-        controller.update(-10 / 10 / 3.3)
-        jcon_L.send_rumble.assert_called_with(0)
-        jcon_R.send_rumble.assert_called_with(10)
+    controller.connect("R")
+    assert controller._jcon_R == jcon
+    assert jcon.connect.called_once()
 
-        controller.update(-12 / 10 / 3.3)
-        jcon_L.send_rumble.assert_called_with(0)
-        jcon_R.send_rumble.assert_called_with(11)
 
-    def test_update_with_zero_pos(self):
-        controller = RumbleController()
-        controller._jcon_L = jcon_L = Mock(spec=Jcon)
-        controller._jcon_R = jcon_R = Mock(spec=Jcon)
+@patch('random.choice')
+def test_update_left(mock_choice):
+    mock_choice.return_value = 3
+    controller = RumbleController()
+    jcon = Mock()
+    controller._jcon_L = jcon
 
-        controller.update(0)
-        jcon_L.send_rumble.assert_called_with(0)
-        jcon_R.send_rumble.assert_called_with(0)
+    # 1. -> 0.
+    controller._prev_left = 1.
+    controller.update(0., None)
+    jcon.send_rumble.assert_called_once_with(0)
+    assert controller._prev_left == 0.
+    jcon.reset_mock()
+
+    # 0. -> 1.
+    controller._prev_left = 0.
+    controller.update(1., None)
+    jcon.send_rumble.assert_called_once_with(11)
+    assert controller._prev_left == 1.
+    jcon.reset_mock()
+
+    # 1. -> 1.
+    controller._prev_left = 1.
+    controller.update(1., None)
+    jcon.send_rumble.assert_called_once_with(3)
+    assert controller._prev_left == 1.
+    jcon.reset_mock()
+
+
+@patch('random.choice')
+def test_update_right(mock_choice):
+    mock_choice.return_value = 3
+    controller = RumbleController()
+    jcon = Mock()
+    controller._jcon_R = jcon
+
+    # 1. -> 0.
+    controller._prev_right = 1.
+    controller.update(None, 0.)
+    jcon.send_rumble.assert_called_once_with(0)
+    assert controller._prev_right == 0.
+    jcon.reset_mock()
+
+    # 0. -> 1.
+    controller._prev_right = 0.
+    controller.update(None, 1.)
+    jcon.send_rumble.assert_called_once_with(11)
+    assert controller._prev_right == 1.
+    jcon.reset_mock()
+
+    # 1. -> 1.
+    controller._prev_right = 1.
+    controller.update(None, 1.)
+    jcon.send_rumble.assert_called_once_with(3)
+    assert controller._prev_right == 1.
+    jcon.reset_mock()

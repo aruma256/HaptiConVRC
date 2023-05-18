@@ -13,9 +13,13 @@ class HomeView(ft.View):
             bgcolor=ft.colors.SURFACE_VARIANT,
         )
         self._position_text = ft.Text()
-        self._connect_controllers_button = ft.ElevatedButton(
-            "Connect Controllers",
-            on_click=self._connect_controllers_button_clicked,
+        self._connect_l_button = ft.ElevatedButton(
+            "Connect Controller L",
+            on_click=self._connect_l_button_clicked,
+        )
+        self._connect_r_button = ft.ElevatedButton(
+            "Connect Controller R",
+            on_click=self._connect_r_button_clicked,
         )
         self._start_osc_server_button = ft.ElevatedButton(
             "Start OSC-Server",
@@ -29,19 +33,39 @@ class HomeView(ft.View):
             route="/",
             controls=[
                 self._app_bar,
-                self._connect_controllers_button,
+                self._connect_l_button,
+                self._connect_r_button,
                 self._start_osc_server_button,
                 self._position_text,
                 self._oss_button,
             ],
         )
 
-    def _connect_controllers_button_clicked(self, _):
-        self._core.connect_controllers()
+    def _connect_l_button_clicked(self, event):
+        try:
+            self._core.connect_controller("L")
+        except OSError:
+            dialog = ft.AlertDialog(
+                title=ft.Text("コントローラー L を接続できませんでした")
+            )
+            event.page.dialog = dialog
+            dialog.open = True
+            event.page.update()
+
+    def _connect_r_button_clicked(self, event):
+        try:
+            self._core.connect_controller("R")
+        except OSError:
+            dialog = ft.AlertDialog(
+                title=ft.Text("コントローラー R を接続できませんでした")
+            )
+            event.page.dialog = dialog
+            dialog.open = True
+            event.page.update()
 
     def _start_osc_server_button_clicked(self, _):
         self._start_osc_server_button.disabled = True
-        self._core.start_tail_tracker()
+        self._core.start_osc_server()
 
     def on_position_updated(self, position):
         self._position_text.value = str(position)
