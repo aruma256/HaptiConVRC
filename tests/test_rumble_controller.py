@@ -3,11 +3,12 @@
 
 from unittest.mock import Mock, patch
 
+from hapticonvrc.rumble_config import RumbleConfig
 from hapticonvrc.rumble_controller import RumbleController
 
 
 def test_connect_l():
-    controller = RumbleController()
+    controller = RumbleController(RumbleConfig())
     jcon = Mock()
     controller._get_jcon = lambda side: jcon
 
@@ -17,7 +18,7 @@ def test_connect_l():
 
 
 def test_connect_r():
-    controller = RumbleController()
+    controller = RumbleController(RumbleConfig())
     jcon = Mock()
     controller._get_jcon = lambda side: jcon
 
@@ -29,7 +30,7 @@ def test_connect_r():
 @patch('random.choice')
 def test_update_left(mock_choice):
     mock_choice.return_value = 3
-    controller = RumbleController()
+    controller = RumbleController(RumbleConfig())
     jcon = Mock()
     controller._jcon_L = jcon
 
@@ -43,7 +44,7 @@ def test_update_left(mock_choice):
     # 0. -> 1.
     controller._prev_left = 0.
     controller.update(1., None)
-    jcon.send_rumble.assert_called_once_with(11)
+    jcon.send_rumble.assert_called_once_with(10)
     assert controller._prev_left == 1.
     jcon.reset_mock()
 
@@ -58,7 +59,7 @@ def test_update_left(mock_choice):
 @patch('random.choice')
 def test_update_right(mock_choice):
     mock_choice.return_value = 3
-    controller = RumbleController()
+    controller = RumbleController(RumbleConfig())
     jcon = Mock()
     controller._jcon_R = jcon
 

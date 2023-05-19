@@ -10,42 +10,75 @@ LICENSE_TEXT = r"""
 
 
 class App:
+    def __init__(self) -> None:
+        self.core = Core()
+
     def main(self, page: ft.Page):
         page.title = APP_TITLE
-        self._core = Core()
-        self._core.start_osc_server()
+        self.core.start_osc_server()
 
-        self._app_bar = ft.AppBar(
-            title=ft.Text(APP_TITLE),
-            bgcolor=ft.colors.SURFACE_VARIANT,
+        def rumble_level_l_on_start_slider_callback(event):
+            self.core.rumble_config.l_level_on_start = int(event.control.value)
+
+        def rumble_level_l_on_move_max_slider_callback(event):
+            self.core.rumble_config.l_level_on_move_max = int(
+                event.control.value)
+
+        def rumble_level_r_on_start_slider_callback(event):
+            self.core.rumble_config.r_level_on_start = int(event.control.value)
+
+        def rumble_level_r_on_move_max_slider_callback(event):
+            self.core.rumble_config.r_level_on_move_max = int(
+                event.control.value)
+
+        page.add(
+            ft.AppBar(
+                title=ft.Text(APP_TITLE),
+                bgcolor=ft.colors.SURFACE_VARIANT,
+            ),
+            ft.ElevatedButton(
+                "コントローラー L を接続する",
+                on_click=self._connect_l_button_clicked,
+            ),
+            ft.Text("開始時の振動の強さ"),
+            ft.Slider(
+                min=0, max=11, divisions=11, label="{value}",
+                value=self.core.rumble_config.l_level_on_start,
+                on_change=rumble_level_l_on_start_slider_callback,
+            ),
+            ft.Text("継続中の振動の強さ（最大値）"),
+            ft.Slider(
+                min=0, max=11, divisions=11, label="{value}",
+                value=self.core.rumble_config.l_level_on_move_max,
+                on_change=rumble_level_l_on_move_max_slider_callback,
+            ),
+            ft.Divider(),
+            ft.ElevatedButton(
+                "コントローラー R を接続する",
+                on_click=self._connect_r_button_clicked,
+            ),
+            ft.Text("開始時の振動の強さ"),
+            ft.Slider(
+                min=0, max=11, divisions=11, label="{value}",
+                value=self.core.rumble_config.r_level_on_start,
+                on_change=rumble_level_r_on_start_slider_callback,
+            ),
+            ft.Text("継続中の振動の強さ（最大値）"),
+            ft.Slider(
+                min=0, max=11, divisions=11, label="{value}",
+                value=self.core.rumble_config.r_level_on_move_max,
+                on_change=rumble_level_r_on_move_max_slider_callback,
+            ),
+            ft.Divider(),
+            ft.ElevatedButton(
+                "OSSライセンス",
+                on_click=self._show_oss_license,
+            ),
         )
-        self._position_text = ft.Text()
-        self._connect_l_button = ft.ElevatedButton(
-            "コントローラー L を接続する",
-            on_click=self._connect_l_button_clicked,
-        )
-        self._connect_r_button = ft.ElevatedButton(
-            "コントローラー R を接続する",
-            on_click=self._connect_r_button_clicked,
-        )
-        self._oss_button = ft.ElevatedButton(
-            "OSSライセンス",
-            on_click=self._show_oss_license,
-        )
-        page.controls.extend(
-            [
-                self._app_bar,
-                self._connect_l_button,
-                self._connect_r_button,
-                self._position_text,
-                self._oss_button,
-            ],
-        )
-        page.update()
 
     def _connect_l_button_clicked(self, event):
         try:
-            self._core.connect_controller("L")
+            self.core.connect_controller("L")
         except OSError:
             dialog = ft.AlertDialog(
                 title=ft.Text("コントローラー L を接続できませんでした")
@@ -56,7 +89,7 @@ class App:
 
     def _connect_r_button_clicked(self, event):
         try:
-            self._core.connect_controller("R")
+            self.core.connect_controller("R")
         except OSError:
             dialog = ft.AlertDialog(
                 title=ft.Text("コントローラー R を接続できませんでした")

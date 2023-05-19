@@ -2,13 +2,15 @@ from threading import Thread
 import time
 
 from .osc_value_provider import OSCValueProvider
+from .rumble_config import RumbleConfig
 from .rumble_controller import RumbleController
 
 
 class Core:
     def __init__(self) -> None:
         self.view = None
-        self._rumble_controller = RumbleController()
+        self.rumble_config = RumbleConfig()
+        self._rumble_controller = RumbleController(self.rumble_config)
 
     def connect_controller(self, side: str) -> None:
         self._rumble_controller.connect(side)
