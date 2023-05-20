@@ -35,6 +35,16 @@ class App:
             ft.AppBar(
                 title=ft.Text(APP_TITLE),
                 bgcolor=ft.colors.SURFACE_VARIANT,
+                actions=[
+                    ft.PopupMenuButton(
+                        items=[
+                            ft.PopupMenuItem(
+                                text="OSSライセンス",
+                                on_click=self._show_oss_license,
+                            ),
+                        ]
+                    ),
+                ],
             ),
             ft.ElevatedButton(
                 "コントローラー L を接続する",
@@ -68,11 +78,6 @@ class App:
                 min=0, max=11, divisions=11, label="{value}",
                 value=self.core.rumble_config.r_level_on_move_max,
                 on_change=rumble_level_r_on_move_max_slider_callback,
-            ),
-            ft.Divider(),
-            ft.ElevatedButton(
-                "OSSライセンス",
-                on_click=self._show_oss_license,
             ),
         )
 
