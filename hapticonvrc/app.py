@@ -82,9 +82,9 @@ class App:
         )
 
     def _connect_l_button_clicked(self, event):
-        try:
-            self.core.connect_controller("L")
-        except OSError:
+        if self.core.connect_controller("L"):
+            pass
+        else:
             dialog = ft.AlertDialog(
                 title=ft.Text("コントローラー L を接続できませんでした")
             )
@@ -93,9 +93,9 @@ class App:
             event.page.update()
 
     def _connect_r_button_clicked(self, event):
-        try:
-            self.core.connect_controller("R")
-        except OSError:
+        if self.core.connect_controller("R"):
+            pass
+        else:
             dialog = ft.AlertDialog(
                 title=ft.Text("コントローラー R を接続できませんでした")
             )

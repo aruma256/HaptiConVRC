@@ -16,13 +16,16 @@ class RumbleController:
         assert side in {"L", "R"}
         return Jcon(side)
 
-    def connect(self, side: str) -> None:
+    def connect(self, side: str) -> bool:
         jcon = self._get_jcon(side)
-        jcon.connect()
-        if side == "L":
-            self._jcon_L = jcon
+        if jcon.connect():
+            if side == "L":
+                self._jcon_L = jcon
+            else:
+                self._jcon_R = jcon
+            return True
         else:
-            self._jcon_R = jcon
+            return False
 
     def update(self, left: float | None, right: float | None) -> None:
         if self._jcon_L:

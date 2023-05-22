@@ -15,10 +15,14 @@ class Jcon:
 
     def connect(self) -> None:
         self._device = hid.device()
-        self._device.open(
-            VENDOR_ID,
-            PRODUCT_ID_L if self._side == "L" else PRODUCT_ID_R,
-        )
+        try:
+            self._device.open(
+                VENDOR_ID,
+                PRODUCT_ID_L if self._side == "L" else PRODUCT_ID_R,
+            )
+            return True
+        except OSError:
+            return False
 
     def send_rumble(self, rumble_level: int) -> None:
         assert self._device is not None

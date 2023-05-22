@@ -12,8 +12,8 @@ class Core:
         self.rumble_config = RumbleConfig()
         self._rumble_controller = RumbleController(self.rumble_config)
 
-    def connect_controller(self, side: str) -> None:
-        self._rumble_controller.connect(side)
+    def connect_controller(self, side: str) -> bool:
+        return self._rumble_controller.connect(side)
 
     def start_osc_server(self) -> None:
         self.value_provider = OSCValueProvider()
