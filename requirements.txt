@@ -1,3 +1,4 @@
 flet==0.5.0
 hidapi==0.13.1
 python-osc==1.8.1
+requests==2.30.0
