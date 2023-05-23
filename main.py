@@ -1,5 +1,3 @@
-from hapticonvrc.core import Core
+from hapticonvrc import app
 
-
-core = Core()
-core.start()
+app.start()
