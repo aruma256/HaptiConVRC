@@ -9,6 +9,7 @@ LICENSE_TEXT = r"""
 {PLACEHOLDER}
 """
 DOWNLOAD_LINK = "https://github.com/aruma256/HaptiConVRC/wiki/Download"
+WINDOW_WIDTH = 600
 
 
 class App:
@@ -17,6 +18,8 @@ class App:
 
     def main(self, page: ft.Page):
         page.title = APP_TITLE
+        page.window_width = WINDOW_WIDTH
+
         self.core.start_osc_server()
 
         def rumble_level_l_on_start_slider_callback(event):
