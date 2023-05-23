@@ -1,12 +1,14 @@
 import flet as ft
 
 from .core import Core
+from .version_checker import VersionChecker
 
 VERSION = "0.3.0"
 APP_TITLE = f"HaptiConVRC v{VERSION}"
 LICENSE_TEXT = r"""
 {PLACEHOLDER}
 """
+DOWNLOAD_LINK = "https://github.com/aruma256/HaptiConVRC/wiki/Download"
 
 
 class App:
@@ -80,6 +82,30 @@ class App:
                 on_change=rumble_level_r_on_move_max_slider_callback,
             ),
         )
+        version_checker = VersionChecker()
+        if version_checker.is_newer_version_available(VERSION):
+            dialog = ft.AlertDialog(
+                title=ft.Text("更新のお知らせ"),
+                content=ft.Column(
+                    [
+                        ft.Text(version_checker.get_message()),
+                        ft.Text("a\n"*100),
+                        ft.Text(spans=[
+                            ft.TextSpan(
+                                text="ダウンロードページへ",
+                                style=ft.TextStyle(
+                                    decoration=ft.TextDecoration.UNDERLINE
+                                ),
+                                url=DOWNLOAD_LINK,
+                            ),
+                        ])
+                    ],
+                    scroll="always",
+                ),
+            )
+            page.dialog = dialog
+            dialog.open = True
+            page.update()
 
     def _connect_l_button_clicked(self, event):
         if self.core.connect_controller("L"):
