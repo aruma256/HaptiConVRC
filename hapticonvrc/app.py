@@ -85,13 +85,14 @@ class App:
                 on_change=rumble_level_r_on_move_max_slider_callback,
             ),
         )
-        version_checker = VersionChecker()
-        if version_checker.is_newer_version_available(VERSION):
+        is_outdated, message_from_new_version\
+            = VersionChecker.is_newer_version_available(VERSION)
+        if is_outdated:
             dialog = ft.AlertDialog(
                 title=ft.Text("更新のお知らせ"),
                 content=ft.Column(
                     [
-                        ft.Text(version_checker.get_message()),
+                        ft.Text(message_from_new_version),
                         ft.Text("a\n"*100),
                         ft.Text(spans=[
                             ft.TextSpan(
