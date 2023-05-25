@@ -93,7 +93,6 @@ class App:
                 content=ft.Column(
                     [
                         ft.Text(message_from_new_version),
-                        ft.Text("a\n"*100),
                         ft.Text(spans=[
                             ft.TextSpan(
                                 text="ダウンロードページへ",
