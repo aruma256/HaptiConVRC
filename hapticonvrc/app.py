@@ -8,6 +8,7 @@ APP_TITLE = f"HaptiConVRC v{VERSION}"
 LICENSE_TEXT = r"""
 {PLACEHOLDER}
 """
+LICENSE_LINK = f"https://github.com/aruma256/HaptiConVRC/blob/v{VERSION}/LICENSE" # noqa
 DOWNLOAD_LINK = "https://github.com/aruma256/HaptiConVRC/wiki/Download"
 WINDOW_WIDTH = 600
 
@@ -40,16 +41,16 @@ class App:
             ft.AppBar(
                 title=ft.Text(APP_TITLE),
                 bgcolor=ft.colors.SURFACE_VARIANT,
-                actions=[
-                    ft.PopupMenuButton(
-                        items=[
-                            ft.PopupMenuItem(
-                                text="OSSライセンス",
-                                on_click=self._show_oss_license,
-                            ),
-                        ]
+                actions=[ft.PopupMenuButton(items=[
+                    ft.PopupMenuItem(
+                        text="ライセンスをブラウザで表示",
+                        on_click=lambda _: page.launch_url(LICENSE_LINK),
                     ),
-                ],
+                    ft.PopupMenuItem(
+                        text="OSSライセンス",
+                        on_click=self._show_oss_license,
+                    ),
+                ])],
             ),
             ft.ElevatedButton(
                 "コントローラー L を接続する",
