@@ -11,6 +11,7 @@ LICENSE_TEXT = r"""
 """
 LICENSE_LINK = f"https://github.com/aruma256/HaptiConVRC/blob/v{VERSION}/LICENSE" # noqa
 DOWNLOAD_LINK = "https://github.com/aruma256/HaptiConVRC/wiki/Installation"
+HELP_LINK = "https://github.com/aruma256/HaptiConVRC/wiki/Help"
 WINDOW_WIDTH = 600
 
 
@@ -102,6 +103,8 @@ class App:
                 value=self.core.rumble_config.r_level_on_move_max,
                 on_change=rumble_level_r_on_move_max_slider_callback,
             ),
+            ft.Divider(),
+            ft.ElevatedButton("ヘルプページを開く", url=HELP_LINK),
         )
         is_outdated, message_from_new_version\
             = VersionChecker.is_newer_version_available(VERSION)
