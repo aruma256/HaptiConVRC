@@ -1,6 +1,7 @@
 import flet as ft
 
 from .core import Core
+from .rumble_tester import RumbleTester
 from .version_checker import VersionChecker
 
 VERSION = "0.3.0"
@@ -52,9 +53,17 @@ class App:
                     ),
                 ])],
             ),
-            ft.ElevatedButton(
-                "コントローラー L を接続する",
-                on_click=self._connect_l_button_clicked,
+            ft.Row(
+                [
+                    ft.ElevatedButton(
+                        "コントローラー L を接続する",
+                        on_click=self._connect_l_button_clicked,
+                    ),
+                    ft.ElevatedButton(
+                        "テスト",
+                        on_click=self._test_l_button_clicked,
+                    ),
+                ]
             ),
             ft.Text("開始時の振動の強さ"),
             ft.Slider(
@@ -69,9 +78,17 @@ class App:
                 on_change=rumble_level_l_on_move_max_slider_callback,
             ),
             ft.Divider(),
-            ft.ElevatedButton(
-                "コントローラー R を接続する",
-                on_click=self._connect_r_button_clicked,
+            ft.Row(
+                [
+                    ft.ElevatedButton(
+                        "コントローラー R を接続する",
+                        on_click=self._connect_r_button_clicked,
+                    ),
+                    ft.ElevatedButton(
+                        "テスト",
+                        on_click=self._test_r_button_clicked,
+                    ),
+                ]
             ),
             ft.Text("開始時の振動の強さ"),
             ft.Slider(
@@ -132,6 +149,12 @@ class App:
             event.page.dialog = dialog
             dialog.open = True
             event.page.update()
+
+    def _test_l_button_clicked(self, event):
+        RumbleTester("/avatar/parameters/HaptiConVRC/L").send_test_values()
+
+    def _test_r_button_clicked(self, event):
+        RumbleTester("/avatar/parameters/HaptiConVRC/R").send_test_values()
 
     def _show_oss_license(self, event):
         dialog = ft.AlertDialog(
