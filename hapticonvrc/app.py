@@ -4,7 +4,7 @@ from .core import Core
 from .rumble_tester import RumbleTester
 from .version_checker import VersionChecker
 
-VERSION = "0.3.0"
+VERSION = "1.0.0"
 APP_TITLE = f"HaptiConVRC v{VERSION}"
 LICENSE_TEXT = r"""
 {PLACEHOLDER}
