@@ -8,7 +8,6 @@ from .rumble_controller import RumbleController
 
 class Core:
     def __init__(self) -> None:
-        self.view = None
         self.rumble_config = RumbleConfig()
         self._rumble_controller = RumbleController(self.rumble_config)
 
@@ -24,6 +23,4 @@ class Core:
         while True:
             left, right = self.value_provider.get_latest_values()
             self._rumble_controller.update(left, right)
-            if self.view:
-                self.view.on_position_updated(left)
             time.sleep(0.06)
