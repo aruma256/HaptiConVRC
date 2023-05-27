@@ -15,11 +15,11 @@ def test_get_latest_values():
     osc_value_provider.start()
     client = SimpleUDPClient("127.0.0.1", PORT)
     # default value
-    assert osc_value_provider.get_latest_values() == (None, None)
+    assert osc_value_provider.get_latest_values() == (0., 0.)
     # update L value
     client.send_message("/avatar/parameters/HaptiConVRC/L", -1.0)
     time.sleep(0.1)
-    assert osc_value_provider.get_latest_values() == (-1.0, None)
+    assert osc_value_provider.get_latest_values() == (-1.0, 0.)
     # update R value
     client.send_message("/avatar/parameters/HaptiConVRC/R", 1.5)
     time.sleep(0.1)
