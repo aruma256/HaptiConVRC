@@ -1,63 +1,55 @@
-import pytest
-import requests
 from unittest import mock
 
-from hapticonvrc.version_checker import VersionChecker, UPDATE_JSON_URL
+import requests
+import pytest
+
+from hapticonvrc.version_checker import VersionChecker
 
 
-class TestVersionChecker:
+@mock.patch('requests.get')
+@pytest.mark.parametrize(
+    "local_version, expected_result",
+    [
+        ("0.9.9", (True, "New version available")),
+        ("1.1.9", (True, "New version available")),
+        ("1.2.2", (True, "New version available")),
+        ("1.2.3", (False, "")),
+        ("1.2.22", (False, "")),
+        ("2.0.0", (False, "")),
+    ]
+)
+def test_is_newer_version_available(mock_get, local_version, expected_result):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {
+        "latest": "1.2.3",
+        "message": "New version available"
+    }
 
-    @pytest.fixture
-    def version_checker(self):
-        return VersionChecker()
+    result = VersionChecker.is_newer_version_available(local_version)
 
-    @mock.patch('requests.get')
-    def test_is_newer_version_available(self, mock_get, version_checker):
-        mock_response = mock.Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            'latest': '1.2.0',
-            'message': 'New version available!'
-        }
-        mock_get.return_value = mock_response
+    assert result == expected_result
+    mock_get.assert_called_once_with(VersionChecker.UPDATE_JSON_URL, timeout=5)
 
-        assert version_checker.is_newer_version_available('1.1.0') is True
-        assert version_checker.message == 'New version available!'
 
-        mock_get.assert_called_once_with(UPDATE_JSON_URL, timeout=5)
+# requests.get が例外を発生させる場合のテスト
+@mock.patch('requests.get')
+def test_is_newer_version_available_request_exception(mock_get):
+    mock_get.side_effect = requests.RequestException
 
-    @mock.patch('requests.get')
-    def test_is_newer_version_available_no_update(self,
-                                                  mock_get,
-                                                  version_checker):
-        mock_response = mock.Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            'latest': '1.1.0',
-            'message': 'New version available!'
-        }
-        mock_get.return_value = mock_response
+    local_version = "1.2.3"
+    result = VersionChecker.is_newer_version_available(local_version)
 
-        assert version_checker.is_newer_version_available('1.2.0') is False
-        assert version_checker.message is None
+    assert result == (False, '')
+    mock_get.assert_called_once_with(VersionChecker.UPDATE_JSON_URL, timeout=5)
 
-        mock_get.assert_called_once_with(UPDATE_JSON_URL, timeout=5)
 
-    @mock.patch('requests.get')
-    def test_is_newer_version_available_request_exception(
-            self, mock_get, version_checker):
-        mock_get.side_effect = requests.RequestException()
+# レスポンスがステータスコード 200 以外の場合のテスト
+@mock.patch('requests.get')
+def test_is_newer_version_available_invalid_status_code(mock_get):
+    mock_get.return_value.status_code = 404
 
-        assert version_checker.is_newer_version_available('1.1.0') is False
-        assert version_checker.message is None
+    local_version = "1.0.0"
+    result = VersionChecker.is_newer_version_available(local_version)
 
-        mock_get.assert_called_once_with(UPDATE_JSON_URL, timeout=5)
-
-    def test_get_message(self, version_checker):
-        version_checker.message = 'New version available!'
-        assert version_checker.get_message() == 'New version available!'
-
-    def test_is_local_version_outdated(self, version_checker):
-        assert version_checker._is_local_version_outdated('1.2.0', '1.1.0') is True # noqa
-        assert version_checker._is_local_version_outdated('1.1.0', '1.2.0') is False # noqa
-        assert version_checker._is_local_version_outdated('1.1.0', '1.1.0') is False # noqa
+    assert result == (False, '')
+    mock_get.assert_called_once_with(VersionChecker.UPDATE_JSON_URL, timeout=5)

@@ -1,7 +1,6 @@
-# Written with ChatGPT
-
-
 from unittest.mock import Mock, patch
+
+import pytest
 
 from hapticonvrc.rumble_config import RumbleConfig
 from hapticonvrc.rumble_controller import RumbleController
@@ -27,59 +26,44 @@ def test_connect_r():
     assert jcon.connect.called_once()
 
 
+@pytest.mark.parametrize('prev_left, current_left, expected_rumble', [
+    (0., 0., 0),
+    (1., 0., 0),
+    (0., 1., 10),
+    (1., 1., 3)
+])
 @patch('random.choice')
-def test_update_left(mock_choice):
+def test_update_left(mock_choice,
+                     prev_left,
+                     current_left,
+                     expected_rumble):
     mock_choice.return_value = 3
     controller = RumbleController(RumbleConfig())
     jcon = Mock()
     controller._jcon_L = jcon
 
-    # 1. -> 0.
-    controller._prev_left = 1.
-    controller.update(0., None)
-    jcon.send_rumble.assert_called_once_with(0)
-    assert controller._prev_left == 0.
-    jcon.reset_mock()
-
-    # 0. -> 1.
-    controller._prev_left = 0.
-    controller.update(1., None)
-    jcon.send_rumble.assert_called_once_with(10)
-    assert controller._prev_left == 1.
-    jcon.reset_mock()
-
-    # 1. -> 1.
-    controller._prev_left = 1.
-    controller.update(1., None)
-    jcon.send_rumble.assert_called_once_with(3)
-    assert controller._prev_left == 1.
+    controller._prev_left = prev_left
+    controller.update(current_left, 0.)
+    jcon.send_rumble.assert_called_once_with(expected_rumble)
+    assert controller._prev_left == current_left
     jcon.reset_mock()
 
 
+@pytest.mark.parametrize('prev_right, current_right, expected_rumble', [
+    (0., 0., 0),
+    (1., 0., 0),
+    (0., 1., 11),
+    (1., 1., 3)
+])
 @patch('random.choice')
-def test_update_right(mock_choice):
+def test_update_right(mock_choice, prev_right, current_right, expected_rumble):
     mock_choice.return_value = 3
     controller = RumbleController(RumbleConfig())
     jcon = Mock()
     controller._jcon_R = jcon
 
-    # 1. -> 0.
-    controller._prev_right = 1.
-    controller.update(None, 0.)
-    jcon.send_rumble.assert_called_once_with(0)
-    assert controller._prev_right == 0.
-    jcon.reset_mock()
-
-    # 0. -> 1.
-    controller._prev_right = 0.
-    controller.update(None, 1.)
-    jcon.send_rumble.assert_called_once_with(11)
-    assert controller._prev_right == 1.
-    jcon.reset_mock()
-
-    # 1. -> 1.
-    controller._prev_right = 1.
-    controller.update(None, 1.)
-    jcon.send_rumble.assert_called_once_with(3)
-    assert controller._prev_right == 1.
+    controller._prev_right = prev_right
+    controller.update(0., current_right)
+    jcon.send_rumble.assert_called_once_with(expected_rumble)
+    assert controller._prev_right == current_right
     jcon.reset_mock()

@@ -1,6 +1,7 @@
 import flet as ft
 
 from .core import Core
+from .rumble_tester import RumbleTester
 from .version_checker import VersionChecker
 
 VERSION = "0.3.0"
@@ -8,7 +9,9 @@ APP_TITLE = f"HaptiConVRC v{VERSION}"
 LICENSE_TEXT = r"""
 {PLACEHOLDER}
 """
-DOWNLOAD_LINK = "https://github.com/aruma256/HaptiConVRC/wiki/Download"
+LICENSE_LINK = f"https://github.com/aruma256/HaptiConVRC/blob/v{VERSION}/LICENSE" # noqa
+DOWNLOAD_LINK = "https://github.com/aruma256/HaptiConVRC/wiki/Installation"
+HELP_LINK = "https://github.com/aruma256/HaptiConVRC/wiki/Help"
 WINDOW_WIDTH = 600
 
 
@@ -40,20 +43,28 @@ class App:
             ft.AppBar(
                 title=ft.Text(APP_TITLE),
                 bgcolor=ft.colors.SURFACE_VARIANT,
-                actions=[
-                    ft.PopupMenuButton(
-                        items=[
-                            ft.PopupMenuItem(
-                                text="OSSライセンス",
-                                on_click=self._show_oss_license,
-                            ),
-                        ]
+                actions=[ft.PopupMenuButton(items=[
+                    ft.PopupMenuItem(
+                        text="ライセンスをブラウザで表示",
+                        on_click=lambda _: page.launch_url(LICENSE_LINK),
                     ),
-                ],
+                    ft.PopupMenuItem(
+                        text="OSSライセンス",
+                        on_click=self._show_oss_license,
+                    ),
+                ])],
             ),
-            ft.ElevatedButton(
-                "コントローラー L を接続する",
-                on_click=self._connect_l_button_clicked,
+            ft.Row(
+                [
+                    ft.ElevatedButton(
+                        "コントローラー L を接続する",
+                        on_click=self._connect_l_button_clicked,
+                    ),
+                    ft.ElevatedButton(
+                        "テスト",
+                        on_click=self._test_l_button_clicked,
+                    ),
+                ]
             ),
             ft.Text("開始時の振動の強さ"),
             ft.Slider(
@@ -68,9 +79,17 @@ class App:
                 on_change=rumble_level_l_on_move_max_slider_callback,
             ),
             ft.Divider(),
-            ft.ElevatedButton(
-                "コントローラー R を接続する",
-                on_click=self._connect_r_button_clicked,
+            ft.Row(
+                [
+                    ft.ElevatedButton(
+                        "コントローラー R を接続する",
+                        on_click=self._connect_r_button_clicked,
+                    ),
+                    ft.ElevatedButton(
+                        "テスト",
+                        on_click=self._test_r_button_clicked,
+                    ),
+                ]
             ),
             ft.Text("開始時の振動の強さ"),
             ft.Slider(
@@ -84,15 +103,17 @@ class App:
                 value=self.core.rumble_config.r_level_on_move_max,
                 on_change=rumble_level_r_on_move_max_slider_callback,
             ),
+            ft.Divider(),
+            ft.ElevatedButton("ヘルプページを開く", url=HELP_LINK),
         )
-        version_checker = VersionChecker()
-        if version_checker.is_newer_version_available(VERSION):
+        is_outdated, message_from_new_version\
+            = VersionChecker.is_newer_version_available(VERSION)
+        if is_outdated:
             dialog = ft.AlertDialog(
                 title=ft.Text("更新のお知らせ"),
                 content=ft.Column(
                     [
-                        ft.Text(version_checker.get_message()),
-                        ft.Text("a\n"*100),
+                        ft.Text(message_from_new_version),
                         ft.Text(spans=[
                             ft.TextSpan(
                                 text="ダウンロードページへ",
@@ -131,6 +152,12 @@ class App:
             event.page.dialog = dialog
             dialog.open = True
             event.page.update()
+
+    def _test_l_button_clicked(self, event):
+        RumbleTester("/avatar/parameters/HaptiConVRC/L").send_test_values()
+
+    def _test_r_button_clicked(self, event):
+        RumbleTester("/avatar/parameters/HaptiConVRC/R").send_test_values()
 
     def _show_oss_license(self, event):
         dialog = ft.AlertDialog(

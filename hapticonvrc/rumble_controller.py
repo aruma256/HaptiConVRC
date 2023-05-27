@@ -27,11 +27,11 @@ class RumbleController:
         else:
             return False
 
-    def update(self, left: float | None, right: float | None) -> None:
+    def update(self, left: float, right: float) -> None:
         if self._jcon_L:
-            if not left:
+            if left == 0:
                 left_rumble_level = 0
-            elif not self._prev_left and left:
+            elif self._prev_left == 0 and left > 0:
                 left_rumble_level = self.config.l_level_on_start
             else:
                 left_rumble_level = random.choice(
@@ -40,9 +40,9 @@ class RumbleController:
             self._jcon_L.send_rumble(left_rumble_level)
             self._prev_left = left
         if self._jcon_R:
-            if not right:
+            if right == 0:
                 right_rumble_level = 0
-            elif not self._prev_right and right:
+            elif self._prev_right == 0 and right > 0:
                 right_rumble_level = self.config.r_level_on_start
             else:
                 right_rumble_level = random.choice(

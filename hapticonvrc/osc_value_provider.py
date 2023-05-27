@@ -9,8 +9,8 @@ class OSCValueProvider:
         self._ip = ip
         self._port = port
         self._thread = None
-        self.left = None
-        self.right = None
+        self.left: float = 0.
+        self.right: float = 0.
 
     def _osc_handler_left(self, address: str, value: float) -> None:
         self.left = value
@@ -32,5 +32,5 @@ class OSCValueProvider:
         self._thread = Thread(target=server.serve_forever, daemon=True)
         self._thread.start()
 
-    def get_latest_values(self) -> tuple[float | None, float | None]:
+    def get_latest_values(self) -> tuple[float, float]:
         return (self.left, self.right)
