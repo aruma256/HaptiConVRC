@@ -10,7 +10,7 @@ LICENSE_TEXT = r"""
 {PLACEHOLDER}
 """
 LICENSE_LINK = f"https://github.com/aruma256/HaptiConVRC/blob/v{VERSION}/LICENSE" # noqa
-DOWNLOAD_LINK = "https://github.com/aruma256/HaptiConVRC/wiki/Download"
+DOWNLOAD_LINK = "https://github.com/aruma256/HaptiConVRC/wiki/Installation"
 WINDOW_WIDTH = 600
 
 
